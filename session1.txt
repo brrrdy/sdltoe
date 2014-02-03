@@ -1,0 +1,12 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="2">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="568" startPos="25" endPos="25" selMode="0" lang="Makefile" encoding="-1" filename="C:\Users\Cody\Dropbox\coding\sdltoe\Makefile" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="272" startPos="100" endPos="100" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Cody\Dropbox\coding\sdltoe\main.cpp" />
+            <File firstVisibleLine="22" xOffset="0" scrollWidth="856" startPos="1059" endPos="1059" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Cody\Dropbox\coding\sdltoe\Game.cpp" />
+        </mainView>
+        <subView activeIndex="0">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="392" startPos="330" endPos="330" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Cody\Dropbox\coding\sdltoe\Game.hpp" />
+        </subView>
+    </Session>
+</NotepadPlus>
