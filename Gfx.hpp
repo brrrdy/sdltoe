@@ -1,22 +1,21 @@
 #ifndef _GFX_HPP_
 #define _GFX_HPP_
-	
+
 #include <SDL2\SDL.h>
-	
+#include <string>
+
 class Gfx {
-
 	public:
-		Gfx();
+		Gfx(std::string tname, SDL_Rect src, SDL_Rect dest);
 		~Gfx();
+	
+		void DrawImage();
 		
-		void Set_Rect(int x, int y, int w, int h);
-		bool Load_Surface(const unsigned int Tx_Id, const SDL_Rect* Src_Rect);
-		bool Draw(SDL_Window* Window, const SDL_Rect* Dest_Rect);
-
+		SDL_Rect Src;
+		SDL_Rect Dest;
+	
 	private:
-		unsigned int Texture_Id;
-		SDL_Rect Src_Rect;
-
+		std::string TextureName;
 };
-			
-#endif 
+
+#endif

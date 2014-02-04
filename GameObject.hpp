@@ -7,13 +7,14 @@
 class GameObject {
 	
 	public:
-		GameObject();
+		GameObject(unsigned int id, Gfx& gfx);
 		virtual ~GameObject();
 	
-		unsigned int Object_Id;
+		unsigned int ObjectId;
+		void Draw();
 		
 	private:
-		Gfx * gfx;
+		Gfx& Graphics;
 	
 		
 };

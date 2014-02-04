@@ -2,17 +2,20 @@
 #define _ASSETMANAGER_HPP_
 
 #include <SDL2\SDL.h>
+#include <string>
+#include <map>
 
 class AssetManager {
 	public:
 		AssetManager();
 		~AssetManager();
 		
-		static SDL_Surface* Get_Texture(unsigned int Tx_Id);
+		static bool LoadTexture(std::string FileName, std::string TextureName);
+		static bool GetTexture(std::string TextureName, SDL_Surface& Texture);
 		
 	private:
-		std::map<unsigned int, SDL_Surface*> Textures;
+		static std::map<std::string, SDL_Surface*> Textures;
 		
 		
-}
+};
 #endif
