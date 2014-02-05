@@ -13,7 +13,7 @@ GameStateSplash::~GameStateSplash()
 {
 }
 
-bool GameStateSplash::Load_Media()
+bool GameStateSplash::LoadMedia(SDL_Renderer* RenderWindow)
 {
 	bool success = true;
 	
@@ -35,21 +35,14 @@ void GameStateSplash::Enter()
 {
 	std::cout << "Entered game state \"Splash\"." << std::endl;
 
-	// load media, exit state if failed
-	if ( !Load_Media() ) 
-	 {
-		std::cout << "Error loading media." << std::endl;
-		Exit();
-	 }
-
 }
 
-void GameStateSplash::Handle_Event(SDL_Event * Event, bool & Running)
+void GameStateSplash::HandleEvent(SDL_Event * Event, bool & Running)
 {
-	GameState::Handle_Event(Event, Running);
+	GameState::HandleEvent(Event, Running);
 	
 	if (Event->type == SDL_MOUSEBUTTONDOWN) {
-		Game::Change_State("Playing");
+		Game::ChangeState("Playing");
 	}
 }
 
@@ -57,13 +50,13 @@ void GameStateSplash::Update()
 {
 }
 
-void GameStateSplash::Render(SDL_Window* Game_Window)
+void GameStateSplash::Render(SDL_Renderer* RenderWindow)
 {
 	// blit the splash screen to the window's surface
-	SDL_BlitSurface( Splash_Screen, NULL, SDL_GetWindowSurface(Game_Window), NULL );
+	SDL_BlitSurface( Splash_Screen, NULL, SDL_GetWindowSurface(GameWindow), NULL );
 	
 	// update window's surface (final step after blitting images!!)
-	SDL_UpdateWindowSurface( Game_Window );
+	SDL_UpdateWindowSurface( GameWindow );
 }
 
 void GameStateSplash::Exit()

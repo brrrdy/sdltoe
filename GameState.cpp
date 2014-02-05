@@ -9,14 +9,17 @@ GameState::GameState(const std::string& GS_Name) : Name(GS_Name) {
 GameState::~GameState() {
 }
 
-bool GameState::Load_Media() {
-	return false;
+bool GameState::LoadMedia(SDL_Renderer* RenderWindow, std::string Files) {
+	bool success = true;
+	
+	
+	return success;
 }
 
 void GameState::Enter() {
 }
 
-void GameState::Handle_Event(SDL_Event * Event, bool &Running) {
+void GameState::HandleEvent(SDL_Event * Event, bool &Running) {
 	if (Event->type == SDL_QUIT) {
 		Running = false;
 	}
@@ -25,7 +28,7 @@ void GameState::Handle_Event(SDL_Event * Event, bool &Running) {
 void GameState::Update() {
 }
 
-void GameState::Render(SDL_Window* Game_Window) {
+void GameState::Render(SDL_Renderer* RenderWindow) {
 }
 
 void GameState::Exit() {

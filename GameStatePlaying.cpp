@@ -3,11 +3,13 @@
 #include "GameStatePlaying.hpp"
 
 GameStatePlaying::GameStatePlaying() : 	GameState("Playing"),
-										Background(NULL),
-										Board(NULL),
+										Board_Size(3),
 										XO(NULL),
 										Game_Over_Surface(NULL),
 										Tile_Size(165),
+										Border_Width(5),
+										xMargin((SCREEN_W-(Board_Size*Tile_Size))/2),
+										yMargin((SCREEN_H-(Board_Size*Tile_Size))/2),
 										Player_Num(1),
 										Move_Num(9),
 										Game_Over(0),
@@ -30,58 +32,37 @@ GameStatePlaying::GameStatePlaying() : 	GameState("Playing"),
 	PA_Loc = {.x = 365, .y = 550, .w = 175, .h = 44};
 	Yes_Loc = {.x = 550, .y = 550, .w = 84, .h = 44};
 	No_Loc = {.x = 640, .y = 550, .w = 84, .h = 44};
+	
+	Game_Board_Area = {.x = xMargin, .y = yMargin, .w = Board_Size*Tile_Size, .h = Board_Size*Tile_Size};
 }
 
 GameStatePlaying::~GameStatePlaying() 
 {
 }
 
-void GameStatePlaying::Init_Board()
+void GameStatePlaying::InitBoard()
 {
-	// initialize Game_Board array
-	for (int i = 0; i < BOARD_SIZE; i++) {		
-		for (int j = 0; j < BOARD_SIZE; j++) {
-			Game_Board[i][j] = 0;
+	// initialize Game_Board vector
+	for (int i = 0; i < Board_Size; i++) {
+	
+		// create temp vector for each column
+		std::vector<int> Col;
+		
+		// fill each col
+		for (int j = 0; j < Board_Size; j++) {
+			Col.push_back(0);
 		}
+		
+		// push each column onto game board
+		Game_Board.push_back(Col);
 	}
-	
-	
-	for (int i = 0; i < BOARD_SIZE; i++) {		
-		for (int j = 0; j < BOARD_SIZE; j++) {
-			Board_Rect[i][j] = { .x = (150 + (i*(Tile_Size+10))), .y = (44 + (j*(Tile_Size+10))), .w = Tile_Size, .h = Tile_Size};
-		}
-	} 
 
+	std::cout << "Game board initialized." << std::endl;
 }
 
-bool GameStatePlaying::Load_Media()
+bool GameStatePlaying::LoadMedia(SDL_Renderer* RenderWindow)
 {
 	bool success = true;
-	
-	// load bg image
-	Background = SDL_LoadBMP( "gfx/lion.bmp" );
-	
-	// test if bg image was loaded
-	if (Background == NULL)
-	{
-		std::cout << "Unable to load BG image." << std::endl;
-		success = false;
-	}
-	
-	
-	// load board image
-	Board = SDL_LoadBMP( "gfx/toeboard.bmp" );
-	// test if board image was loaded
-	if (Board == NULL)
-	{
-		std::cout << "Unable to load board image." << std::endl;
-		success = false;
-	}
-	else
-	{
-		// set transparency 
-		SDL_SetColorKey( Board, SDL_TRUE, SDL_MapRGB ( Board->format, 255, 0, 255 ) );
-	}
 	
 	
 	// load xo image
@@ -117,17 +98,17 @@ bool GameStatePlaying::Load_Media()
 	
 }
 
-int GameStatePlaying::Check_Win() {
+int GameStatePlaying::CheckWin() {
 	
 	// check cols
-	for (int i = 0; i < BOARD_SIZE; i++) {
+	for (int i = 0; i < Board_Size; i++) {
 		if ((Game_Board[i][0] == Game_Board[i][1]) && (Game_Board[i][0] == Game_Board[i][2]) ) {
 			return Game_Board[i][0];
 		}
 	}
 	
 	// check rows
-	for (int i = 0; i < BOARD_SIZE; i++) {
+	for (int i = 0; i < Board_Size; i++) {
 		if ((Game_Board[0][i] == Game_Board[1][i]) && (Game_Board[0][i] == Game_Board[2][i]) ) {
 			return Game_Board[0][i];
 		}
@@ -143,8 +124,8 @@ int GameStatePlaying::Check_Win() {
 	return 0;
 }
 
-void GameStatePlaying::Restart_Game() {
-	Init_Board();
+void GameStatePlaying::RestartGame() {
+	InitBoard();
 	Player_Num = 1;
 	Move_Num = 9;
 	Game_Over = 0;
@@ -158,28 +139,15 @@ void GameStatePlaying::Enter()
 {
 	std::cout << "Entered game state \"Playing\"." << std::endl;
 
-	Init_Board();
-	
-	for (int i = 0; i < BOARD_SIZE; i++) {		
-		for (int j = 0; j < BOARD_SIZE; j++) {
-			std::cout << "Board Rect [" << i << "][" << j << "] = " << Board_Rect[i][j].x << ", " << Board_Rect[i][j].y << ", " << Board_Rect[i][j].w << ", " << Board_Rect[i][j].h << std::endl;
-		}
-	}
-	
-	// load media, exit state if failed
-	if ( !Load_Media() ) 
-	 {
-		std::cout << "Error loading media. Exiting..." << std::endl;
-		Exit();
-	 }
+	InitBoard();
 
 }
 
 
 
-void GameStatePlaying::Handle_Event(SDL_Event * Event, bool & Running)
+void GameStatePlaying::HandleEvent(SDL_Event * Event, bool & Running)
 {
-	GameState::Handle_Event(Event, Running);
+	GameState::HandleEvent(Event, Running);
 	
 	if (Event->type == SDL_MOUSEBUTTONDOWN) {
 	
@@ -187,61 +155,64 @@ void GameStatePlaying::Handle_Event(SDL_Event * Event, bool & Running)
 		SDL_GetMouseState( &x, &y );
 		SDL_Rect mPos = { x, y, 1, 1 };
 		std::cout << "mouse click at "<< x <<", " << y << std::endl;
+		 
 			
 		if ( !(Display_Game_Over) ) {
 			// Game is in play
 			
-			for (int i = 0; i < BOARD_SIZE; i++) {		
-				for (int j = 0; j < BOARD_SIZE; j++) {
-					if (SDL_HasIntersection(&Board_Rect[i][j], &mPos)) {
-						std::cout << "Click detected in tile " << i << ", " << j << std::endl;
+			// check if click was in game board area
+			if (SDL_HasIntersection(&Game_Board_Area, &mPos)) {
+			
+				int row = (mPos.y - yMargin)/Tile_Size;
+				int col = (mPos.x - xMargin)/Tile_Size;
+				
+				std::cout << "Click detected in tile " << row << ", " << col << std::endl;
+				
+				if (Game_Board[row][col] == 0) {
+					Game_Board[row][col] = Player_Num;
+					
+					if (Player_Num == 1)
+						Player_Num = 2;
+					else
+						Player_Num = 1;
 						
-						if (Game_Board[i][j] == 0) {
-							Game_Board[i][j] = Player_Num;
-							
-							if (Player_Num == 1)
-								Player_Num = 2;
-							else
-								Player_Num = 1;
-								
-							Move_Num--;
-							
-							// set boolean value to check if game is over
-							Game_Over = Check_Win();
-	
-							std::cout << "Moves left: " << Move_Num << std::endl;
-													
-							if (Move_Num == 0 && Game_Over == 0) {
-								std::cout << "Game tied!" << std::endl;
-								Display_Game_Over = true;
-							}
-							else if (Game_Over == 1) {
-								std::cout << "Player 1 wins!" << std::endl;
-								Display_Game_Over = true;
-							}
-							else if (Game_Over == 2) {
-								std::cout << "Player 2 wins!" << std::endl;
-								Display_Game_Over = true;
-							}
-							else {
-								std::cout << "Player " << Player_Num << "\'s turn." << std::endl;
-							}
-						}
+					Move_Num--;
+					
+					// set boolean value to check if game is over
+					Game_Over = CheckWin();
+
+					std::cout << "Moves left: " << Move_Num << std::endl;
+											
+					if (Move_Num == 0 && Game_Over == 0) {
+						std::cout << "Game tied!" << std::endl;
+						Display_Game_Over = true;
+					}
+					else if (Game_Over == 1) {
+						std::cout << "Player 1 wins!" << std::endl;
+						Display_Game_Over = true;
+					}
+					else if (Game_Over == 2) {
+						std::cout << "Player 2 wins!" << std::endl;
+						Display_Game_Over = true;
+					}
+					else {
+						std::cout << "Player " << Player_Num << "\'s turn." << std::endl;
 					}
 				}
 			}
-		} else if (Display_Game_Over) {
-			// Game is over
-			// check mPos for clicks on Yes/No buttons
-			if (SDL_HasIntersection(&Yes_Loc, &mPos)) {
-				// Restart game
-				std::cout << "Player clicked yes" << std::endl;
-				Restart_Game();
-			}
-			else if (SDL_HasIntersection(&No_Loc, &mPos)) {
-				// Exit game
-				std::cout << "Player clicked no" << std::endl;
-				Running = false;
+			else if (Display_Game_Over) {
+				// Game is over
+				// check mPos for clicks on Yes/No buttons
+				if (SDL_HasIntersection(&Yes_Loc, &mPos)) {
+					// Restart game
+					std::cout << "Player clicked yes" << std::endl;
+					RestartGame();
+				}
+				else if (SDL_HasIntersection(&No_Loc, &mPos)) {
+					// Exit game
+					std::cout << "Player clicked no" << std::endl;
+					Running = false;
+				}
 			}
 		}
 	}
@@ -253,55 +224,43 @@ void GameStatePlaying::Update()
 	
 }
 
-void GameStatePlaying::Render(SDL_Window* Game_Window)
+void GameStatePlaying::Render(SDL_Renderer* RenderWindow)
 {
 
-	// blit the bg, board and xo screen to the window's surface
-	SDL_BlitSurface( Background, NULL, SDL_GetWindowSurface(Game_Window), NULL );
-	SDL_BlitSurface( Board, NULL, SDL_GetWindowSurface(Game_Window), NULL );
 
+	// draw grid lines for tiles
 	
-	for (int i = 0; i < BOARD_SIZE; i++) {		
-		for (int j = 0; j < BOARD_SIZE; j++) {
-			if (Game_Board[i][j] == 1) {
-				SDL_Rect Move_Rect = { Board_Rect[i][j].x, Board_Rect[i][j].y , Tile_Size, Tile_Size };
-				SDL_BlitSurface( XO, &O_Rect , SDL_GetWindowSurface(Game_Window), &Move_Rect  );
-			}
-			
-			if (Game_Board[i][j] == 2) {
-				SDL_Rect Move_Rect = { Board_Rect[i][j].x, Board_Rect[i][j].y , Tile_Size, Tile_Size };
-				SDL_BlitSurface( XO, &X_Rect , SDL_GetWindowSurface(Game_Window), &Move_Rect );
-			}
-		}
-	}
-	
+	// display game over messages
 	if (Display_Game_Over) {
-		SDL_BlitSurface ( Game_Over_Surface, &PA_Rect, SDL_GetWindowSurface(Game_Window), &PA_Loc );
-		SDL_BlitSurface ( Game_Over_Surface, &Yes_Button, SDL_GetWindowSurface(Game_Window), &Yes_Loc );
-		SDL_BlitSurface ( Game_Over_Surface, &No_Button, SDL_GetWindowSurface(Game_Window), &No_Loc ); 
+		SDL_BlitSurface ( Game_Over_Surface, &PA_Rect, SDL_GetWindowSurface(GameWindow), &PA_Loc );
+		SDL_BlitSurface ( Game_Over_Surface, &Yes_Button, SDL_GetWindowSurface(GameWindow), &Yes_Loc );
+		SDL_BlitSurface ( Game_Over_Surface, &No_Button, SDL_GetWindowSurface(GameWindow), &No_Loc ); 
 		
 		if (Game_Over != 0){
-			SDL_BlitSurface ( Game_Over_Surface, &Player_Rect, SDL_GetWindowSurface(Game_Window), &Player_Loc );
-			SDL_BlitSurface ( Game_Over_Surface, &Wins_Rect, SDL_GetWindowSurface(Game_Window), &Wins_Loc );
+			SDL_BlitSurface ( Game_Over_Surface, &Player_Rect, SDL_GetWindowSurface(GameWindow), &Player_Loc );
+			SDL_BlitSurface ( Game_Over_Surface, &Wins_Rect, SDL_GetWindowSurface(GameWindow), &Wins_Loc );
 
 		}
 		
 		if (Game_Over == 1) {
-			SDL_BlitSurface ( Game_Over_Surface, &One_Rect, SDL_GetWindowSurface(Game_Window), &Num_Loc );
+			SDL_BlitSurface ( Game_Over_Surface, &One_Rect, SDL_GetWindowSurface(GameWindow), &Num_Loc );
 		} else if (Game_Over == 2) {
-			SDL_BlitSurface ( Game_Over_Surface, &Two_Rect, SDL_GetWindowSurface(Game_Window), &Num_Loc );
+			SDL_BlitSurface ( Game_Over_Surface, &Two_Rect, SDL_GetWindowSurface(GameWindow), &Num_Loc );
 		}
 	}
 	
 	
-	// update window's surface (final step after blitting images!!)
-	SDL_UpdateWindowSurface( Game_Window );
+	// clear render target
+	SDL_SetRenderDrawColor(RenderWindow, 255, 255, 255, 255);
+	SDL_RenderClear(RenderWindow);
+	
+	// draw rendered images!!
+	SDL_RenderPresent(RenderWindow);
+	
 }
 
 void GameStatePlaying::Exit()
 {
-	SDL_FreeSurface( Background );
-	SDL_FreeSurface( Board );
 	SDL_FreeSurface ( XO );
 	SDL_FreeSurface ( Game_Over_Surface );
 	std::cout << "Exiting game state \"Playing\"." << std::endl;

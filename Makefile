@@ -8,7 +8,7 @@ CFLAGS=-c -Wall -std=c++11
 LDFLAGS= -lmingw32 -lSDL2main -lSDL2
 
 #source files
-SOURCES= main.cpp Game.cpp Gfx.cpp GameState.cpp GameStateSplash.cpp GameStatePlaying.cpp
+SOURCES= main.cpp Game.cpp Gfx.cpp GameObject.cpp GameObjectManager.cpp GameState.cpp GameStateSplash.cpp GameStatePlaying.cpp AssetManager.cpp
 
 #object files
 OBJECTS=$(SOURCES:.cpp=.o)

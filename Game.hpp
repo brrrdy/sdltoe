@@ -11,18 +11,20 @@ class Game {
 	public:
 		Game();
 		int Execute();
-		static void Change_State(const std::string State_Name);
+		static void ChangeState(const std::string State_Name);
 		
 		bool Init();
 		void Exit();
 
-	private:
-		SDL_Window* Main_Window;		
-		bool Game_Running;
+		static SDL_Window* MainWindow;
+		static SDL_Renderer* RenderWindow;
 		
-		static GameState* Current_State;
+	private:	
+		bool GameRunning;
 		
-		static std::map<std::string, GameState*> Game_States;
+		static GameState* CurrentState;
+		
+		static std::map<std::string, GameState*> GameStates;
 		
 };
 	

@@ -7,7 +7,8 @@
 
 #include "GameState.hpp"
 
-#define BOARD_SIZE 3
+#define SCREEN_W 800
+#define SCREEN_H 600
 
 typedef std::pair<int,int> int_pair;
 
@@ -17,19 +18,20 @@ class GameStatePlaying : public GameState {
 		~GameStatePlaying();
 		
 		virtual void Enter();
-		virtual void Handle_Event(SDL_Event* Event, bool & Running);
+		virtual bool LoadMedia(SDL_Renderer* RenderWindow);
+		virtual void HandleEvent(SDL_Event* Event, bool & Running);
 		virtual void Update();
-		virtual void Render(SDL_Window* Game_Window);
+		virtual void Render(SDL_Renderer* RenderWindow);
 		virtual void Exit();
 		
 	private:
-		virtual bool Load_Media();
-		void Init_Board();
-		int Check_Win();
-		void Restart_Game();
+		void InitBoard();
+		int CheckWin();
+		void RestartGame();
 		
-		SDL_Surface* Background;
-		SDL_Surface* Board;
+		int Board_Size;
+		int To_Win;
+		
 		SDL_Surface* XO;
 		SDL_Surface* Game_Over_Surface;
 		
@@ -49,10 +51,14 @@ class GameStatePlaying : public GameState {
 		SDL_Rect PA_Loc;
 		SDL_Rect Yes_Loc;
 		SDL_Rect No_Loc;
+		
+		SDL_Rect Game_Board_Area;
 	
-		int Game_Board[BOARD_SIZE][BOARD_SIZE];
-		SDL_Rect Board_Rect[BOARD_SIZE][BOARD_SIZE];
+		std::vector<std::vector<int> > Game_Board;
 		int Tile_Size;
+		int Border_Width;
+		int xMargin;
+		int yMargin;
 		int Player_Num;
 		int Move_Num;
 		int Game_Over;

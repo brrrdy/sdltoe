@@ -10,13 +10,13 @@ class GameStateSplash : public GameState {
 		~GameStateSplash();
 		
 		virtual void Enter();
-		virtual void Handle_Event(SDL_Event * Event, bool & Running);
+		virtual bool LoadMedia(SDL_Renderer* RenderWindow);
+		virtual void HandleEvent(SDL_Event * Event, bool & Running);
 		virtual void Update();
-		virtual void Render(SDL_Window* Game_Window);
+		virtual void Render(SDL_Renderer* RenderWindow);
 		virtual void Exit();
 		
 	private:
-		virtual bool Load_Media();
 		
 		SDL_Surface* Splash_Screen;
 

@@ -5,43 +5,41 @@
 
 #include <iostream>
 
-Game::Game() : 	Main_Window(NULL),
-				Game_Running(false) {
+Game::Game() : 	GameRunning(false) {
 }
 
 int Game::Execute() {
 	// check if everything initialized
 	if (Init() == false) {
+		std::cout << "Somethin don goofed with initialization" << std::endl;
 		return -1;
 	}
-	
-	SDL_Event Event;
 	
 	// create game states
 	GameStateSplash * Splash_Ptr = new GameStateSplash();
 	GameStatePlaying * Play_Ptr = new GameStatePlaying();
 	
 	// insert game states into state map
-	Game_States.insert(std::make_pair("Splash", Splash_Ptr ));
-	Game_States.insert(std::make_pair("Playing", Play_Ptr ));
+	GameStates.insert(std::make_pair("Splash", Splash_Ptr ));
+	GameStates.insert(std::make_pair("Playing", Play_Ptr ));
 	
 	
 	// load first state
-	Change_State("Splash");
+	ChangeState("Splash");
 	
-	
+	SDL_Event Event;
 	
 	//main game loop
-	while (Game_Running) {
-	
+	while (GameRunning) {
+		
 		// process events
 		while(SDL_PollEvent(&Event)) {
-			Current_State->Handle_Event(&Event, Game_Running);
+			CurrentState->HandleEvent(&Event, GameRunning);
 		}
 	
-		Current_State->Update();
+		CurrentState->Update();
 		
-		Current_State->Render(Main_Window);
+		CurrentState->Render(MainWindow, RenderWindow);
 	}
 	
 	Exit();
@@ -49,18 +47,19 @@ int Game::Execute() {
 	return 0;
 }
 
-void Game::Change_State(const std::string State_Name) {
-	if (Current_State != NULL) {
-		Current_State->Exit();
+void Game::ChangeState(const std::string State_Name) {
+	if (CurrentState != NULL) {
+		CurrentState->Exit();
 	}
 	
 	// find matching state ptr to state_name
-	auto state_itr = Game_States.find(State_Name);
+	auto state_itr = GameStates.find(State_Name);
 	
 	// check if state was found...
-	if (state_itr != Game_States.end() ) {
-		Current_State = state_itr->second;
-		Current_State->Enter();
+	if (state_itr != GameStates.end() ) {
+		CurrentState = state_itr->second;
+		CurrentState->Enter();
+		CurrentState->LoadMedia(& RenderWindow);
 	}
 	else {
 		std::cout << "Error, state " << State_Name << " not found." << std::endl;
@@ -75,7 +74,7 @@ bool Game::Init() {
 	}
 		
 	// open SDL window
-	if((Main_Window = SDL_CreateWindow("Tic Tac Toe",
+	if((MainWindow = SDL_CreateWindow("Tic Tac Toe",
 										SDL_WINDOWPOS_UNDEFINED,
 										SDL_WINDOWPOS_UNDEFINED,
 										800, 600, 
@@ -83,10 +82,14 @@ bool Game::Init() {
 										) == NULL) {
 		return false;
 	}
+	
+	if ( (RenderWindow = SDL_CreateRenderer(MainWindow, -1, 0)) == NULL) {
+		return false;
+	}
 		
 	// successfully initialized
 	std::cout << "Game initialized." << std::endl;
-	Game_Running = true;
+	GameRunning = true;
 	return true;
 	
 }
@@ -95,22 +98,24 @@ bool Game::Init() {
 void Game::Exit() {
 
 	// exit current state
-	Current_State->Exit();
+	CurrentState->Exit();
 	
 	
 	// clean up state ptrs
-	for (auto state_itr = Game_States.begin(); state_itr != Game_States.end(); ++state_itr) {
+	for (auto state_itr = GameStates.begin(); state_itr != GameStates.end(); ++state_itr) {
 		delete state_itr->second;
 		std::cout << "Deleted state: " << state_itr->first << std::endl;
 	}
 	
 	
 	// clean up SDL related resources
-	SDL_DestroyWindow( Main_Window);
+	SDL_DestroyWindow( MainWindow);
 	SDL_Quit();
 	
 	std::cout << "Game exiting." << std::endl;
 }
 
-GameState* Game::Current_State = NULL;
-std::map<std::string, GameState*> Game::Game_States;
+SDL_Window* Game::MainWindow = NULL;
+SDL_Renderer* Game::RenderWindow = NULL;
+GameState* Game::CurrentState = NULL;
+std::map<std::string, GameState*> Game::GameStates;
