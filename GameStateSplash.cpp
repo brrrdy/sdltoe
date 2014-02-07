@@ -4,7 +4,7 @@
 #include "GameStateSplash.hpp"
 
 GameStateSplash::GameStateSplash() : 	GameState("Splash"),
-										Splash_Screen(NULL)
+										Screen_Texture(NULL)
 { 
 
 }
@@ -18,14 +18,23 @@ bool GameStateSplash::LoadMedia(SDL_Renderer* RenderWindow)
 	bool success = true;
 	
 	// load splash image
-	Splash_Screen = SDL_LoadBMP( "gfx/splash.bmp" );
-	
+	SDL_Surface * Splash_Screen = SDL_LoadBMP( "gfx/splash.bmp" );
 	// test if splash image was loaded
 	if (Splash_Screen == NULL)
 	{
-		std::cout << "Unable to load Splash screen image." << std::endl;
+		std::cout << "Unable to load Splash screen image.\n" << SDL_GetError() << std::endl;
 		success = false;
 	}
+
+	// create screen texture from splash screen surface
+	Screen_Texture = SDL_CreateTextureFromSurface(RenderWindow, Splash_Screen);	
+	// test if texture was created
+	if (Screen_Texture == NULL) {
+		std::cout << "Unable to generate screen texture.\n" << SDL_GetError() << std::endl;
+		success = false;
+	}
+
+	SDL_FreeSurface(Splash_Screen);
 	
 	return success;
 	
@@ -52,15 +61,16 @@ void GameStateSplash::Update()
 
 void GameStateSplash::Render(SDL_Renderer* RenderWindow)
 {
-	// blit the splash screen to the window's surface
-	SDL_BlitSurface( Splash_Screen, NULL, SDL_GetWindowSurface(GameWindow), NULL );
-	
-	// update window's surface (final step after blitting images!!)
-	SDL_UpdateWindowSurface( GameWindow );
+	// clear renderer
+	SDL_RenderClear(RenderWindow);
+	// copy the screen texture to the renderer
+	SDL_RenderCopy(RenderWindow, Screen_Texture, NULL, NULL);
+	// present rendered changes
+	SDL_RenderPresent(RenderWindow);
+
 }
 
 void GameStateSplash::Exit()
 {
-	SDL_FreeSurface( Splash_Screen );
 	std::cout << "Exiting game state \"Splash\"." << std::endl;
 }

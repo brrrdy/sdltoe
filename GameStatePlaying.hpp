@@ -10,7 +10,8 @@
 #define SCREEN_W 800
 #define SCREEN_H 600
 
-typedef std::pair<int,int> int_pair;
+typedef std::pair<int,int> Int_Pair;
+typedef std::vector<Int_Pair> Int_Pair_Vec;
 
 class GameStatePlaying : public GameState {
 	public:
@@ -27,10 +28,16 @@ class GameStatePlaying : public GameState {
 	private:
 		void InitBoard();
 		int CheckWin();
-		void RestartGame();
+		int CheckXbyX(int x, int col, int row);
+		void RestartGame();	
+		//bool CheckAdjacents(std::vector<Int_Pair_Vec> & Adjacents, Int_Pair ip);
+		//bool ResolveAdjacents(std::vector<Int_Pair_Vec> & Adjacents, Int_Pair ip);
+		//bool isAdjacent(std::vector<Int_Pair_Vec>::iterator AdjIt, Int_Pair ip);
 		
 		int Board_Size;
 		int To_Win;
+		//std::vector<Int_Pair_Vec> P1Adjacents;
+		//std::vector<Int_Pair_Vec> P2Adjacents;
 		
 		SDL_Surface* XO;
 		SDL_Surface* Game_Over_Surface;

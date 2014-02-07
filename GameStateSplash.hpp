@@ -18,7 +18,7 @@ class GameStateSplash : public GameState {
 		
 	private:
 		
-		SDL_Surface* Splash_Screen;
+		SDL_Texture * Screen_Texture;
 
 };
 

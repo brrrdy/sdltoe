@@ -5,7 +5,9 @@
 
 #include <iostream>
 
-Game::Game() : 	GameRunning(false) {
+Game::Game() : 	Screen_Width(800),
+				Screen_Height(600),
+				GameRunning(false) {
 }
 
 int Game::Execute() {
@@ -39,7 +41,7 @@ int Game::Execute() {
 	
 		CurrentState->Update();
 		
-		CurrentState->Render(MainWindow, RenderWindow);
+		CurrentState->Render(RenderWindow);
 	}
 	
 	Exit();
@@ -59,7 +61,7 @@ void Game::ChangeState(const std::string State_Name) {
 	if (state_itr != GameStates.end() ) {
 		CurrentState = state_itr->second;
 		CurrentState->Enter();
-		CurrentState->LoadMedia(& RenderWindow);
+		CurrentState->LoadMedia(RenderWindow);
 	}
 	else {
 		std::cout << "Error, state " << State_Name << " not found." << std::endl;

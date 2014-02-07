@@ -19,6 +19,8 @@ class Game {
 		static SDL_Window* MainWindow;
 		static SDL_Renderer* RenderWindow;
 		
+		int Screen_Width, Screen_Height;
+		
 	private:	
 		bool GameRunning;
 		

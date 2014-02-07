@@ -17,7 +17,7 @@ class GameState
 		std::string GetName();
 	
 		virtual void Enter();
-		virtual bool LoadMedia(SDL_Renderer* RenderWindow, std::string Files);
+		virtual bool LoadMedia(SDL_Renderer* RenderWindow);
 		virtual void HandleEvent(SDL_Event * Event, bool & Running);
 		virtual void Update();
 		virtual void Render(SDL_Renderer* RenderWindow);

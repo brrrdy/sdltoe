@@ -9,7 +9,7 @@ GameState::GameState(const std::string& GS_Name) : Name(GS_Name) {
 GameState::~GameState() {
 }
 
-bool GameState::LoadMedia(SDL_Renderer* RenderWindow, std::string Files) {
+bool GameState::LoadMedia(SDL_Renderer* RenderWindow) {
 	bool success = true;
 	
 	
