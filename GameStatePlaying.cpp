@@ -4,16 +4,9 @@
 #include "GameStatePlaying.hpp"
 
 GameStatePlaying::GameStatePlaying() : 	GameState("Playing"),
-										Board_Size(9),
-										To_Win(4),
 										XO(NULL),
 										Game_Over_Surface(NULL),
-										Tile_Size(50),
-										Border_Width(5),
-										xMargin((SCREEN_W-(Board_Size*Tile_Size))/2),
-										yMargin((SCREEN_H-(Board_Size*Tile_Size))/2),
 										Player_Num(1),
-										Move_Num(Board_Size*Board_Size),
 										Game_Over(0),
 										Display_Game_Over(false)
 { 
@@ -34,8 +27,6 @@ GameStatePlaying::GameStatePlaying() : 	GameState("Playing"),
 	PA_Loc = {.x = 365, .y = 550, .w = 175, .h = 44};
 	Yes_Loc = {.x = 550, .y = 550, .w = 84, .h = 44};
 	No_Loc = {.x = 640, .y = 550, .w = 84, .h = 44};
-	
-	Game_Board_Area = {.x = xMargin, .y = yMargin, .w = Board_Size*Tile_Size, .h = Board_Size*Tile_Size};
 }
 
 GameStatePlaying::~GameStatePlaying() 
@@ -130,20 +121,7 @@ bool GameStatePlaying::isAdjacent(std::vector<Int_Pair_Vec>::iterator AdjIt, Int
 }
 */
 
-//**********************************
-// Initializes the game_board 2d vector that
-// holds game board information
-//**********************************
 
-void GameStatePlaying::InitBoard()
-{
-	// initialize Game_Board vector
-	
-	std::vector<int> row(Board_Size, 0);
-	Game_Board.assign(Board_Size, row);
-
-	std::cout << "Game board initialized." << std::endl;
-}
 
 
 //**********************************
@@ -186,105 +164,6 @@ bool GameStatePlaying::LoadMedia(SDL_Renderer* RenderWindow)
 	
 	return success;
 	
-}
-
-//**************************
-// Check each X by X square for winning conditions
-// where X is defined by number of squares needed to win.
-//**************************
-
-int GameStatePlaying::CheckWin() {
-	int col, row;
-	
-	for (col = 0; col <= (Board_Size - To_Win); col++) {
-		for (row = 0; row <= (Board_Size - To_Win); row++) {
-			int check = CheckXbyX(To_Win, col, row);
-			if (check != 0) {
-				return check;
-			}
-		}
-	}
-	
-	return 0;
-}
-
-//**************************
-// Check for winning conditions in an X by X vector
-// by checking rows, columns, up left to down right diags and
-// down left to up right diags.
-//**************************
-
-int GameStatePlaying::CheckXbyX(int x, int col, int row) {
-
-	// check rows
-	int checkRow = 0;
-	for (int i = row; i < (row+x); i++) {
-		for (int j = col; j < (col+x); j++) {
-			if (Game_Board[i][j] == 1) {
-				checkRow++;
-			} else if (Game_Board[i][j] == 2) {
-				checkRow--;
-			}
-		}
-		if ( abs(checkRow) == To_Win ) {
-			std::cout << "Row victory at " << row << "," << col << std::endl;
-			return Player_Num;
-		}
-		checkRow = 0;
-	}
-	
-	// check cols
-	int checkCol = 0;
-	for (int i = row; i < (row+x); i++) {
-		for (int j = col; j < (col+x); j++) {
-			if (Game_Board[j][i] == 1) {
-				checkCol++;
-			} else if (Game_Board[j][i] == 2) {
-				checkCol--;
-			}
-		}
-		if ( abs(checkCol) == To_Win ) {
-			std::cout << "Col victory at " << row << "," << col << std::endl;
-			return Player_Num;
-		}
-		checkCol = 0;
-	}
-	
-	// check up row to down right diag
-	int checkUpLDiag = 0;
-	//std::cout << "Checking diags at " << col << "," << row << std::endl;
-	for (int i = row, j = col; (i < (row+x)) && (j < (col+x)); i++, j++) {
-		 //std::cout << "Checked: " << i << "," << j << std::endl;
-		 
-		if (Game_Board[i][j] == 1) {
-			checkUpLDiag++;
-		} else if (Game_Board[i][j] == 2) {
-			checkUpLDiag--;
-		}
-	}
-	if ( abs(checkUpLDiag) == To_Win ) {
-		std::cout << "Diag victory at " << row << "," << col << std::endl;
-		return Player_Num;
-	}
-	
-	// check down row and up right
-	int checkDLDiag = 0;
-	//std::cout << "Checking diags at " << col << "," << row << std::endl;
-	for (int i = row + (x - 1), j = col; (i >= row) && (j < (col+x)); i--, j++) {
-		 //std::cout << "Checked: " << i << "," << j << std::endl;
-		 
-		if (Game_Board[i][j] == 1) {
-			checkDLDiag++;
-		} else if (Game_Board[i][j] == 2) {
-			checkDLDiag--;
-		}
-	}
-	if ( abs(checkDLDiag) == To_Win ) {
-		std::cout << "Diag victory at " << row << "," << col << std::endl;
-		return Player_Num;
-	}
-	
-	return 0;
 }
 
 //**************************

@@ -5,14 +5,18 @@
 
 #include <iostream>
 
+// default Game object constructor
 Game::Game() : 	Screen_Width(800),
 				Screen_Height(600),
 				GameRunning(false) {
 }
 
+//*****************************************
+//Initialize Game and GameStates, main game loop
+//*****************************************
 int Game::Execute() {
 	// check if everything initialized
-	if (Init() == false) {
+	if (Init(Screen_Width, Screen_Height) == false) {
 		std::cout << "Somethin don goofed with initialization" << std::endl;
 		return -1;
 	}
@@ -49,6 +53,10 @@ int Game::Execute() {
 	return 0;
 }
 
+//*****************************************
+//Change from the current state to a new one
+//by calling old->exit, new->enter and new->load
+//*****************************************
 void Game::ChangeState(const std::string State_Name) {
 	if (CurrentState != NULL) {
 		CurrentState->Exit();
@@ -69,7 +77,10 @@ void Game::ChangeState(const std::string State_Name) {
 
 }
 
-bool Game::Init() {
+//*****************************************
+//Initialize SDL and the game window
+//*****************************************
+bool Game::Init(int ScrWidth, int scrHeight) {
 	// initialize SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0 ) {
 		return false;
@@ -79,7 +90,7 @@ bool Game::Init() {
 	if((MainWindow = SDL_CreateWindow("Tic Tac Toe",
 										SDL_WINDOWPOS_UNDEFINED,
 										SDL_WINDOWPOS_UNDEFINED,
-										800, 600, 
+										scrWidth, scrHeight, 
 										SDL_WINDOW_OPENGL)
 										) == NULL) {
 		return false;
@@ -96,7 +107,10 @@ bool Game::Init() {
 	
 }
 
-
+//*****************************************
+// Clean up after ourselves
+// by deleting GameStates/SDL stuff
+//*****************************************
 void Game::Exit() {
 
 	// exit current state
@@ -117,6 +131,7 @@ void Game::Exit() {
 	std::cout << "Game exiting." << std::endl;
 }
 
+// static member declarations
 SDL_Window* Game::MainWindow = NULL;
 SDL_Renderer* Game::RenderWindow = NULL;
 GameState* Game::CurrentState = NULL;

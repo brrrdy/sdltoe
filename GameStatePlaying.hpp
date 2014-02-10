@@ -26,16 +26,12 @@ class GameStatePlaying : public GameState {
 		virtual void Exit();
 		
 	private:
-		void InitBoard();
-		int CheckWin();
-		int CheckXbyX(int x, int col, int row);
 		void RestartGame();	
+		
 		//bool CheckAdjacents(std::vector<Int_Pair_Vec> & Adjacents, Int_Pair ip);
 		//bool ResolveAdjacents(std::vector<Int_Pair_Vec> & Adjacents, Int_Pair ip);
 		//bool isAdjacent(std::vector<Int_Pair_Vec>::iterator AdjIt, Int_Pair ip);
 		
-		int Board_Size;
-		int To_Win;
 		//std::vector<Int_Pair_Vec> P1Adjacents;
 		//std::vector<Int_Pair_Vec> P2Adjacents;
 		
@@ -62,12 +58,8 @@ class GameStatePlaying : public GameState {
 		SDL_Rect Game_Board_Area;
 	
 		std::vector<std::vector<int> > Game_Board;
-		int Tile_Size;
-		int Border_Width;
-		int xMargin;
-		int yMargin;
+		
 		int Player_Num;
-		int Move_Num;
 		int Game_Over;
 		bool Display_Game_Over;
 

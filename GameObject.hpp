@@ -11,9 +11,10 @@ class GameObject {
 		virtual ~GameObject();
 	
 		unsigned int ObjectId;
-		void Draw();
+		virtual void Update();
+		virtual void Draw(SDL_Renderer * RenderWindow);
 		
-	private:
+	protected:
 		Gfx& Graphics;
 	
 		
