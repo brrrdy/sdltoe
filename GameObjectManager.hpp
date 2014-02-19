@@ -12,7 +12,7 @@ class GameObjectManager {
 		void Insert(GameObject& NewObject);
 		
 		void Update(double ElapsedTime);
-		void DrawAll();
+		void DrawAll(SDL_Renderer * RenderWindow);
 	
 	private:
 		std::vector<GameObject> VisibleObjects;

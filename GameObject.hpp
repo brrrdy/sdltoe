@@ -7,7 +7,8 @@
 class GameObject {
 	
 	public:
-		GameObject(unsigned int id, Gfx& gfx);
+		GameObject();
+		GameObject(unsigned int id, Gfx* gfx);
 		virtual ~GameObject();
 	
 		unsigned int ObjectId;
@@ -15,7 +16,7 @@ class GameObject {
 		virtual void Draw(SDL_Renderer * RenderWindow);
 		
 	protected:
-		Gfx& Graphics;
+		Gfx* Graphics;
 	
 		
 };

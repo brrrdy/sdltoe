@@ -1,27 +1,31 @@
 #ifndef _GAMEBOARD_H_
 #define _GAMEBOARD_H_
 
+#include <SDL2\SDL.h>
+
+#include <vector>
+
 #include "GameObject.hpp"
 
 class GameBoard : GameObject {
 	public:
 		GameBoard();
-		GameBoard(int BoardSize, int ToWin, int TileSize, int BorderWidth, int xMargin, int yMargin);
+		GameBoard(int BoardSize, int ToWin);
 		virtual ~GameBoard();
 		
 		virtual void Update();
 		virtual void Draw(SDL_Renderer * RenderWindow);
 		
 		void Initialize();
-		void HandleClick(SDL_Rect & mPos);
-		bool IsGameOver();
+		void Initialize(int bSize);
+		void HandleClick(SDL_Rect & mPos, int pNum);
 		bool CheckWin();
-		bool CheckXbyX(int x, int row, int col);
-		SDL_Rect GetArea();
+		bool NoMoves;
 		
 	private:
-		void InitVec();
-		void InitBoardSize();
+		void InitVec(int bSize);
+		void InitBoardSize(int bSize);
+		bool CheckXbyX(int row, int col);
 	
 		std::vector<std::vector<int> > Game_Board;
 	
@@ -29,9 +33,8 @@ class GameBoard : GameObject {
 		int _ToWin;
 		int _TileSize;
 		int _BorderWidth;
-		int _xMargin;
-		int _yMargin;
 		int _MovesLeft;
+		SDL_Rect _BoardArea;
 };
 
 #endif

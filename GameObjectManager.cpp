@@ -14,9 +14,9 @@ void GameObjectManager::Update(double ElapsedTime) {
 	// call update for each game object
 }
 
-void GameObjectManager::DrawAll() {
+void GameObjectManager::DrawAll(SDL_Renderer * RenderWindow) {
 	std::vector<GameObject>::iterator it;
 	for (it = VisibleObjects.begin(); it != VisibleObjects.end(); it++) {
-		it->Draw();
+		it->Draw(RenderWindow);
 	}
 }
